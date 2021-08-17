@@ -27,12 +27,16 @@ contract Chatroom {
     /**
 
         This is the main thing. Everything else is b*lls**t.
-        
+
         Bills'it, owned by someone named bill. 🙃
 
      */
     function registerKey(bytes32 key) external {
         publicKeys[msg.sender] = key;
+    }
+
+    function deleteKey() external {
+        delete publicKeys[msg.sender];
     }
 
     function getKey(address receiver) view external returns(bytes32) {
