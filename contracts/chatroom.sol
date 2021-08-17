@@ -2,30 +2,50 @@
 
 pragma solidity ^0.8.6;
 
+interface IERC20 {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+}
+
 contract Chatroom {
+    address payable public immutable dev;
     
     mapping( address => bytes32 ) public publicKeys;
 
     event announce(address from, string message);
     event whisper(address from, address to, string message);
 
-    function say(string calldata message) public {
+    constructor() { dev = payable(msg.sender); }
 
+    function say(string calldata message) external {
+        emit announce(msg.sender, message);
     }
 
-    function say(string calldata message, address to) public {
-
+    function tell(address to, string calldata scrambledNonsense) external {
+        emit whisper(msg.sender, to, scrambledNonsense);
     }
 
-    function sayAnonymously(string calldata message) public {
+    /**
 
+        This is the main thing. Everything else is b*lls**t.
+        
+        Bills'it, owned by someone named bill. 🙃
+
+     */
+    function registerKey(bytes32 key) external {
+        publicKeys[msg.sender] = key;
     }
 
-    function sayAnonymously(string calldata message, address to) public {
-
+    function getKey(address receiver) view external returns(bytes32) {
+        return publicKeys[receiver];
     }
 
-    function registerKey(bytes32 key) public {
-
+    function retrieveDonations() external payable {
+        dev.transfer(address(this).balance);
     }
+
+    function retrieveTokenDonations(address c, uint256 amount) external {
+        IERC20(c).transfer(dev, amount);
+    }
+    receive() external payable {}
+    fallback() external payable {}
 }
